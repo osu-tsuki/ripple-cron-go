@@ -6,15 +6,15 @@ import (
 	"github.com/fatih/color"
 )
 
-type ppUserMode struct {
+type ppAPUserMode struct {
 	countScores int
 	ppTotal     int
 }
 
-func opCalculatePP() {
+func opCalculateAPPP() {
 	defer wg.Done()
 
-	const ppQuery = "SELECT scores.userid, pp, scores.play_mode FROM scores INNER JOIN users ON users.id=scores.userid JOIN beatmaps USING(beatmap_md5) WHERE completed = 3 AND ranked >= 2 AND disable_pp = 0 AND pp IS NOT NULL ORDER BY pp DESC"
+	const ppQuery = "SELECT scores_ap.userid, pp, scores_ap.play_mode FROM scores_ap INNER JOIN users ON users.id=scores_ap.userid JOIN beatmaps USING(beatmap_md5) WHERE completed = 3 AND ranked >= 2 AND disable_pp = 0 AND pp IS NOT NULL ORDER BY pp DESC"
 	rows, err := db.Query(ppQuery)
 	if err != nil {
 		queryError(err, ppQuery)
@@ -52,7 +52,7 @@ func opCalculatePP() {
 		if users[userid][playMode].countScores > 500 {
 			continue
 		}
-		currentScorePP := round(round(*ppAmt) * math.Pow(0.95, float64(users[userid][playMode].countScores)))
+		currentScorePP := roundRX(roundRX(*ppAmt) * math.Pow(0.95, float64(users[userid][playMode].countScores)))
 		users[userid][playMode].countScores++
 		users[userid][playMode].ppTotal += int(currentScorePP)
 		count++
@@ -61,7 +61,7 @@ func opCalculatePP() {
 
 	for userid, pps := range users {
 		for mode, ppUM := range *pps {
-			op("UPDATE users_stats SET pp_"+modeToString(mode)+" = ? WHERE id = ? LIMIT 1", ppUM.ppTotal, userid)
+			op("UPDATE auto_stats SET pp_"+modeToString(mode)+" = ? WHERE id = ? LIMIT 1", ppUM.ppTotal, userid)
 		}
 	}
 
@@ -73,7 +73,7 @@ func opCalculatePP() {
 	}
 }
 
-func round(a float64) float64 {
+func roundAP(a float64) float64 {
 	if a < 0 {
 		return math.Ceil(a - 0.5)
 	}

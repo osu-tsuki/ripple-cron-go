@@ -1,5 +1,7 @@
 # ripple-cron-go
 
+Edited for relax-autopilot 
+
 The fastest cron for ripple you'll never need.
 
 A bit of explaination here:

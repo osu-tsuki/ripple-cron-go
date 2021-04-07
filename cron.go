@@ -32,6 +32,8 @@ type config struct {
 	CleanReplays                   bool
 	PopulateRedis                  bool
 	CalculatePP                    bool
+	CalculateRelaxPP               bool
+	CalculateAutoPP                bool
 	FixScoreDuplicates             bool `description:"might take a VERY long time"`
 	CalculateOverallAccuracy       bool
 	FixCompletedScores             bool `description:"Set to completed = 2 all scores on beatmaps that aren't ranked."`
@@ -182,6 +184,16 @@ func main() {
 		verboseln("Starting calculating pp")
 		wg.Add(2)
 		go opCalculatePP()
+	}
+	if c.CalculateRelaxPP {
+		verboseln("Starting calculating relax pp")
+		wg.Add(2)
+		go opCalculateRXPP()
+	}
+	if c.CalculateAutoPP {
+		verboseln("Starting calculating auto pp")
+		wg.Add(2)
+		go opCalculateAPPP()
 	}
 	if c.FixScoreDuplicates {
 		verboseln("Starting fixing score duplicates")
